@@ -31,6 +31,15 @@ class UI {
     books.forEach((book) => UI.addBookToList(book));
   }
 
+  static showAlert(message, className) {
+    const div = document.createElement("div");
+    div.className = `alert alert-${className}`;
+    div.appendChild(document.createTextNode(message));
+    const container = document.querySelector(".container");
+    const form = document.querySelector("#book-form");
+    container.insertBefore(div, form);
+  }
+
   static clearFields() {
     document.querySelector("#title").value = "";
     document.querySelector("#author").value = "";
@@ -47,7 +56,7 @@ class UI {
     const list = document.querySelector("#book-list");
     const row = document.createElement("tr");
 
-    row.innerHTML = `<td>${book.title}</td><td>${book.author}</td><td>${book.title}</td><td><a href="#" class="btn btn-danger delete"><i class="fa-solid fa-trash"></i></a></td>`;
+    row.innerHTML = `<td>${book.title}</td><td>${book.author}</td><td>${book.title}</td><td><i class="fa-solid fa-trash delete"></i></td>`;
 
     list.appendChild(row);
   }
@@ -62,7 +71,7 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
   const isbn = document.querySelector("#isbn").value;
 
   if (title === "" || author === "" || isbn === "") {
-    alert("Please fill in all fields.");
+    UI.showAlert("Please fill in all fields.", "danger");
   } else {
     const book = new Book(title, author, isbn);
 
