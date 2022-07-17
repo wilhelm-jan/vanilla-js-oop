@@ -31,11 +31,23 @@ class UI {
     books.forEach((book) => UI.addBookToList(book));
   }
 
+  static clearFields() {
+    document.querySelector("#title").value = "";
+    document.querySelector("#author").value = "";
+    document.querySelector("#isbn").value = "";
+  }
+
+  static deleteBook(item) {
+    if (item.classList.contains("delete")) {
+      item.parentElement.parentElement.remove();
+    }
+  }
+
   static addBookToList(book) {
     const list = document.querySelector("#book-list");
     const row = document.createElement("tr");
 
-    row.innerHTML = `<td>${book.title}</td><td>${book.author}</td><td>${book.title}</td><td><a href="#" btn btn-danger><i class="fa-solid fa-trash"></i></a></td>`;
+    row.innerHTML = `<td>${book.title}</td><td>${book.author}</td><td>${book.title}</td><td><a href="#" class="btn btn-danger delete"><i class="fa-solid fa-trash"></i></a></td>`;
 
     list.appendChild(row);
   }
@@ -49,7 +61,16 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
   const author = document.querySelector("#author").value;
   const isbn = document.querySelector("#isbn").value;
 
-  const book = new Book(title, author, isbn);
+  if (title === "" || author === "" || isbn === "") {
+    alert("Please fill in all fields.");
+  } else {
+    const book = new Book(title, author, isbn);
 
-  console.log(book);
+    UI.addBookToList(book);
+    UI.clearFields();
+  }
+});
+
+document.querySelector("#book-list").addEventListener("click", (e) => {
+  UI.deleteBook(e.target);
 });
