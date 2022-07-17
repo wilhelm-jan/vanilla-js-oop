@@ -8,23 +8,7 @@ class Book {
 
 class UI {
   static displayBooks() {
-    const StoredBooks = [
-      {
-        title: "Headstrong",
-        author: "Dave Asprey",
-        isbn: "9780062652416",
-      },
-      {
-        title: "Boundless",
-        author: "Ben Greenfield",
-        isbn: "1628603976",
-      },
-      {
-        title: "Code of the extraordinary mind",
-        author: "Vishen Lakhiani",
-        isbn: "1623367085",
-      },
-    ];
+    const StoredBooks = Store.getBooks();
 
     const books = StoredBooks;
 
@@ -38,6 +22,7 @@ class UI {
     const container = document.querySelector(".container");
     const form = document.querySelector("#book-form");
     container.insertBefore(div, form);
+    setTimeout(() => document.querySelector(".alert").remove(), 2500);
   }
 
   static clearFields() {
@@ -62,6 +47,34 @@ class UI {
   }
 }
 
+class Store {
+  static getBooks() {
+    let books;
+    if (localStorage.getItem("books") === null) {
+      books = [];
+    } else {
+      books = JSON.parse(localStorage.getItem("books"));
+    }
+    return books;
+  }
+
+  static addBook(book) {
+    const books = Store.getBooks();
+    books.push(book);
+    localStorage.setItem("books", JSON.stringify(books));
+  }
+  static removeBook(isbn) {
+    const books = Store.getBooks();
+
+    books.forEach((book, i) => {
+      if (book.isbn === isbn) {
+        books.splice(i, 1);
+      }
+    });
+    localStorage.setItem("books", JSON.stringify(books));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", UI.displayBooks);
 document.querySelector("#book-form").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -73,13 +86,16 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
   if (title === "" || author === "" || isbn === "") {
     UI.showAlert("Please fill in all fields.", "danger");
   } else {
+    UI.showAlert("Book added.", "success");
     const book = new Book(title, author, isbn);
-
     UI.addBookToList(book);
+    Store.addBook(book);
     UI.clearFields();
   }
 });
 
 document.querySelector("#book-list").addEventListener("click", (e) => {
   UI.deleteBook(e.target);
+  Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+  UI.showAlert("Book removed.", "success");
 });
